@@ -6,7 +6,7 @@ services:
     image: mariadb:10
     restart: always
     environment:
-      MYSQL_RANDOM_ROOT_PASSWORD: yes
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
     volumes:
       - "mariadb-data:/var/lib/mysql"
     networks:
