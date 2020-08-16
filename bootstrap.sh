@@ -11,7 +11,7 @@ SEAT_DOCKER_INSTALL=/opt/seat-docker
 
 echo "SeAT Docker Bootstrap"
 echo
-echo "This script will installer docker, docker-compose, download"
+echo "This script will install docker, docker-compose, download"
 echo "all of the nessesary container and finally start up a fresh"
 echo "SeAT installation."
 echo
