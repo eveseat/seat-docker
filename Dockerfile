@@ -41,6 +41,8 @@ RUN rmdir /var/www/html && \
 RUN a2enmod rewrite
 EXPOSE 80
 
+WORKDIR /var/www/seat
+
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
