@@ -77,7 +77,7 @@ function start_web_service() {
     php -r "file_exists('.env') || copy('.env.example', '.env');"
     php artisan migrate
     php artisan eve:update:sde -n
-    php artisan db:seed --class=Seat\\Services\\database\\seeds\\ScheduleSeeder
+    php artisan db:seed --class=Seat\\Console\\database\\seeds\\ScheduleSeeder
 
     echo "Completed first run routines"
 
