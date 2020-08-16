@@ -5,9 +5,25 @@
 
 # 2018 - 2020 @leonjza
 
+set -e
+
 SEAT_DOCKER_INSTALL=/opt/seat-docker
 
-set -e
+echo "SeAT Docker Bootstrap"
+echo
+echo "This script will installer docker, docker-compose, download"
+echo "all of the nessesary container and finally start up a fresh"
+echo "SeAT installation."
+echo
+echo "Everything will live in $SEAT_DOCKER_INSTALL"
+
+read -p "Are you sure you want to continue? " -n 1 -r
+echo    # (optional) move to a new line
+if [[ ! $REPLY =~ ^[Yy]$ ]]
+then
+    echo "Please type \"y\" to continue"
+    exit 1
+fi
 
 # Running as root?
 if (( $EUID != 0 )); then
