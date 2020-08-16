@@ -50,9 +50,10 @@ mkdir -p $SEAT_DOCKER_INSTALL
 cd $SEAT_DOCKER_INSTALL
 
 echo "Grabbing docker-compose and .env file"
-curl -L https://raw.githubusercontent.com/eveseat/scripts/master/docker-compose/docker-compose.yml -o $SEAT_DOCKER_INSTALL/docker-compose.yml
-curl -L https://raw.githubusercontent.com/eveseat/scripts/master/docker-compose/.env -o $SEAT_DOCKER_INSTALL/.env
-curl -L https://raw.githubusercontent.com/eveseat/scripts/master/docker-compose/my.cnf -o $SEAT_DOCKER_INSTALL/my.cnf
+curl -L https://raw.githubusercontent.com/eveseat/seat-docker/master/docker-compose.yml \
+    -o $SEAT_DOCKER_INSTALL/docker-compose.yml
+curl -L https://raw.githubusercontent.com/eveseat/seat-docker/master/.env \
+    -o $SEAT_DOCKER_INSTALL/.env
 
 echo "Generating a random database password and writing it to the .env file."
 sed -i -- 's/DB_PASSWORD=i_should_be_changed/DB_PASSWORD='$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c22 ; echo '')'/g' .env
@@ -62,7 +63,5 @@ sed -i -- 's/APP_KEY=insecure/APP_KEY='$(head /dev/urandom | tr -dc A-Za-z0-9 | 
 echo "Starting docker stack. This will download the images too. Please wait..."
 docker-compose up -d
 
-echo "Images downloaded. The containers are now iniliatising. To check what is happening, run 'docker-compose logs --tail 5 -f' in /opt/seat-docker"
-
-echo "Done!"
+echo "Done! The containers are now iniliatising. To check what is happening, run 'docker-compose logs --tail 5 -f' in /opt/seat-docker"
 
