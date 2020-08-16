@@ -10,7 +10,7 @@ services:
     volumes:
       - "mariadb-data:/var/lib/mysql"
     networks:
-      - seat-dev-network
+      - seat-network
     logging:
       driver: "json-file"
       options:
@@ -21,7 +21,7 @@ services:
     image: redis:5-alpine
     restart: always
     networks:
-      - seat-dev-network
+      - seat-network
     logging:
       driver: "json-file"
       options:
@@ -58,7 +58,7 @@ services:
       # Uncomment to enable HTTPS via ACME
       #- "traefik.http.routers.api.tls.certResolver=primary"
     networks:
-      - seat-dev-network
+      - seat-network
     logging:
       driver: "json-file"
       options:
@@ -81,7 +81,7 @@ services:
       - mariadb
       - redis
     networks:
-      - seat-dev-network
+      - seat-network
     logging:
       driver: "json-file"
       options:
@@ -99,7 +99,7 @@ services:
       - mariadb
       - redis
     networks:
-      - seat-dev-network
+      - seat-network
     logging:
       driver: "json-file"
       options:
@@ -117,7 +117,7 @@ services:
       - mariadb
       - redis
     networks:
-      - seat-dev-network
+      - seat-network
     logging:
       driver: "json-file"
       options:
@@ -129,4 +129,4 @@ volumes:
     mariadb-data:
 
 networks:
-    seat-dev-network:
+    seat-network:
