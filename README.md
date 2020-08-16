@@ -1,2 +1,7 @@
+![SeAT](https://i.imgur.com/aPPOxSK.png)
+
 # seat-docker
-SeAT Docker Image
+
+## This repository contains the SeAT Docker Setup
+
+Please use the main SeAT repository [here](https://github.com/eveseat/seat) for issues.
