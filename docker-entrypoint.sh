@@ -100,6 +100,12 @@ function start_web_service() {
 # installation before starting up.
 function start_worker_service() {
 
+    echo "Starting first run routines"
+
+    php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+    echo "Completed first run routines"
+
     install_plugins
 
     # fix up permissions for the storage directory
