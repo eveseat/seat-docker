@@ -16,13 +16,13 @@ fi
 
 # Wait for MySQL
 while ! mysqladmin ping -hmariadb -u$MYSQL_USER -p$MYSQL_PASSWORD --silent; do
-    echo "MariaDB container might not be ready yet... sleeping..."
+    echo "MariaDB container might not be ready yet. Sleeping..."
     sleep 3
 done
 
 # Wait for Redis
 while ! redis-cli -h redis ping; do
-    echo "Redis container might not be ready yet... sleeping..."
+    echo "Redis container might not be ready yet. Sleeping..."
     sleep 3
 done
 
@@ -74,7 +74,6 @@ function start_web_service() {
 
     echo "Starting first run routines"
 
-    php -r "file_exists('.env') || copy('.env.example', '.env');"
     php artisan migrate
     php artisan eve:update:sde -n
     php artisan db:seed --class=Seat\\Console\\database\\seeds\\ScheduleSeeder
@@ -99,12 +98,6 @@ function start_web_service() {
 # it will wait for the source directory to complete composer
 # installation before starting up.
 function start_worker_service() {
-
-    echo "Starting first run routines"
-
-    php -r "file_exists('.env') || copy('.env.example', '.env');"
-
-    echo "Completed first run routines"
 
     install_plugins
 

@@ -31,6 +31,8 @@ RUN cd /var/www && \
     # Fix up the source permissions to be owned by www-data
     chown -R www-data:www-data /var/www/seat && \
     cd /var/www/seat && \
+    # Setup the default configuration file
+    php -r "file_exists('.env') || copy('.env.example', '.env');" && \
     # Publish assets and generate API documentation
     php artisan vendor:publish --force --all && \
     php artisan l5-swagger:generate
