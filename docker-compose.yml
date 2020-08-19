@@ -69,7 +69,7 @@ services:
         max-file: "5"
 
   seat-web:
-    image: eveseat/seat
+    image: eveseat/seat:4
     restart: always
     command: web
     env_file:
@@ -92,7 +92,7 @@ services:
         max-file: "5"
 
   seat-worker:
-    image: eveseat/seat
+    image: eveseat/seat:4
     restart: always
     command: worker
     env_file:
@@ -110,7 +110,7 @@ services:
         max-file: "5"
 
   seat-cron:
-    image: eveseat/seat
+    image: eveseat/seat:4
     restart: always
     command: cron
     env_file:
