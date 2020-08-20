@@ -52,6 +52,9 @@ function install_plugins() {
         # Update the plugins.
         composer update ${plugins} --no-scripts --no-dev --no-ansi --no-progress
 
+        # Redump the autoloader
+        composer dump-autoload
+
         # Publish assets and migrations and run them.
         php artisan vendor:publish --force --all
 
