@@ -76,6 +76,11 @@ sed -i -- 's/DB_PASSWORD=i_should_be_changed/DB_PASSWORD='$(head /dev/urandom | 
 echo "Generating an application key and writing it to the .env file."
 sed -i -- 's/APP_KEY=insecure/APP_KEY='$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c32 ; echo '')'/g' .env
 
+echo "Preparing an acme.json file for Traefik and Let's Encrypt"
+mkdir acme
+touch acme/acme.json
+chmod 600 acme/acme.json
+
 echo "Starting docker stack. This will download the images too. Please wait..."
 docker-compose up -d
 
