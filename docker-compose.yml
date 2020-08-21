@@ -41,6 +41,8 @@ services:
       - --providers.docker
       - --providers.docker.exposedByDefault=false
       - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
       - --entryPoints.websecure.address=:443
       - --entrypoints.websecure.http.tls=true
       # ACME
