@@ -78,8 +78,8 @@ services:
       - .env
     labels:
       - "traefik.enable=true"
-      #- "traefik.http.routers.seat-web.rule=Host(`${SEAT_SUBDOMAIN}.${TRAEFIK_DOMAIN}`)"
-      #- "traefik.http.routers.seat-web.entrypoints=websecure"
+      - "traefik.http.routers.seat-web.rule=Host(`${SEAT_SUBDOMAIN}.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.seat-web.entrypoints=websecure"
       # Uncomment to enable HTTPS via ACME
       #- "traefik.http.routers.seat-web.tls.certResolver=primary"
     depends_on:
