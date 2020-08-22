@@ -57,9 +57,9 @@ services:
       - ./acme/acme.json:/acme.json
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.api.rule=Host(`traefik.${TRAEFIK_DOMAIN}`)"
-      - "traefik.http.routers.api.service=api@internal"
-      - "traefik.http.routers.api.entrypoints=websecure"
+      #- "traefik.http.routers.api.rule=Host(`traefik.${TRAEFIK_DOMAIN}`)"
+      #- "traefik.http.routers.api.service=api@internal"
+      #- "traefik.http.routers.api.entrypoints=websecure"
       # Uncomment to enable HTTPS via ACME
       #- "traefik.http.routers.api.tls.certResolver=primary"
     networks:
@@ -78,8 +78,8 @@ services:
       - .env
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.seat-web.rule=Host(`${SEAT_SUBDOMAIN}.${TRAEFIK_DOMAIN}`)"
-      - "traefik.http.routers.seat-web.entrypoints=websecure"
+      #- "traefik.http.routers.seat-web.rule=Host(`${SEAT_SUBDOMAIN}.${TRAEFIK_DOMAIN}`)"
+      #- "traefik.http.routers.seat-web.entrypoints=websecure"
       # Uncomment to enable HTTPS via ACME
       #- "traefik.http.routers.seat-web.tls.certResolver=primary"
     depends_on:
