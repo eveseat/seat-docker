@@ -15,13 +15,13 @@ if ! [[ "$1" =~ ^(web|worker|cron)$ ]]; then
 fi
 
 # Wait for MySQL
-while ! mysqladmin ping -hmariadb -u$MYSQL_USER -p$MYSQL_PASSWORD --silent; do
+while ! mysqladmin ping -h$DB_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD --silent; do
     echo "MariaDB container might not be ready yet. Sleeping..."
     sleep 3
 done
 
 # Wait for Redis
-while ! redis-cli -h redis ping; do
+while ! redis-cli -h $REDIS_HOST ping; do
     echo "Redis container might not be ready yet. Sleeping..."
     sleep 3
 done
