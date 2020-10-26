@@ -15,7 +15,7 @@ if ! [[ "$1" =~ ^(web|worker|cron)$ ]]; then
 fi
 
 # Wait for MySQL
-while ! mysqladmin ping -h$DB_HOST -u$DB_USERNAME -p$DB_PASSWORD --silent; do
+while ! mysqladmin ping -h$DB_HOST -u$DB_USERNAME -p$DB_PASSWORD -P${DB_PORT:-3306} --silent; do
     echo "MariaDB container might not be ready yet. Sleeping..."
     sleep 3
 done
