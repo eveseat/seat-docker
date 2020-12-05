@@ -15,13 +15,13 @@ if ! [[ "$1" =~ ^(web|worker|cron)$ ]]; then
 fi
 
 # Wait for MySQL
-while ! mysqladmin ping -h$DB_HOST -u$DB_USERNAME -p$DB_PASSWORD -P${DB_PORT:-3306} --silent; do
+while ! mysqladmin ping -h"$DB_HOST" -u"$DB_USERNAME" -p"$DB_PASSWORD" -P${DB_PORT:-3306} --silent; do
     echo "MariaDB container might not be ready yet. Sleeping..."
     sleep 3
 done
 
 # Wait for Redis
-while ! redis-cli -h $REDIS_HOST ping; do
+while ! redis-cli -h "$REDIS_HOST" ping; do
     echo "Redis container might not be ready yet. Sleeping..."
     sleep 3
 done
@@ -38,7 +38,7 @@ function install_plugins() {
 
     echo "Processing plugins from SEAT_PLUGINS"
 
-    plugins=`echo -n ${SEAT_PLUGINS} | sed 's/,/ /g'`
+    plugins=$(echo -n ${SEAT_PLUGINS} | sed 's/,/ /g')
     if [ ! "$plugins" == "" ]; then
 
         echo "Installing plugins: ${SEAT_PLUGINS}"
@@ -51,6 +51,9 @@ function install_plugins() {
 
         # Update the plugins.
         composer update ${plugins} --no-scripts --no-dev --no-ansi --no-progress
+
+        # register dev packages if setup
+        test -f packages/autoload.json && register_dev_packages
 
         # Redump the autoloader
         composer dump-autoload
@@ -68,6 +71,20 @@ function install_plugins() {
     fi
 
     echo "Completed plugins processing"
+}
+
+function register_dev_packages() {
+
+  echo "autoload.json overrider has been detected."
+  echo "Merging composer.json and autoload.json together..."
+
+  # take a backup from original composer.json
+  if [ ! -f "composer.json.bak" ]; then
+    cp composer.json composer.json.bak
+  fi
+
+  # use JQ in order to merge both overrider and sourcing composer.json
+  jq -s '.[0] as $composer | .[1] as $overrider | $composer | ."autoload-dev"."psr-4" = $composer."autoload-dev"."psr-4" + $overrider' composer.json.bak packages/autoload.json >> composer.json
 }
 
 # start_web_service
