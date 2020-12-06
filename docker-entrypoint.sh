@@ -52,9 +52,6 @@ function install_plugins() {
         # Update the plugins.
         composer update ${plugins} --no-scripts --no-dev --no-ansi --no-progress
 
-        # register dev packages if setup
-        test -f packages/autoload.json && register_dev_packages
-
         # Redump the autoloader
         composer dump-autoload
 
@@ -75,16 +72,30 @@ function install_plugins() {
 
 function register_dev_packages() {
 
-  echo "autoload.json overrider has been detected."
-  echo "Merging composer.json and autoload.json together..."
+    echo "autoload.json overrider has been detected."
+    echo "Merging composer.json and autoload.json together..."
 
-  # take a backup from original composer.json
-  if [ ! -f "composer.json.bak" ]; then
-    cp composer.json composer.json.bak
-  fi
+    # take a backup from original composer.json
+    if [ ! -f "composer.json.bak" ]; then
+        cp composer.json composer.json.bak
+    fi
 
-  # use JQ in order to merge both overrider and sourcing composer.json
-  jq -s '.[0] as $composer | .[1] as $overrider | $composer | ."autoload-dev"."psr-4" = $composer."autoload-dev"."psr-4" + $overrider' composer.json.bak packages/autoload.json >> composer.json
+    # use JQ in order to merge both overrider and sourcing composer.json
+    jq -s '.[0] as $composer | .[1] as $overrider | $composer | ."autoload-dev"."psr-4" = $composer."autoload-dev"."psr-4" + $overrider' composer.json.bak packages/autoload.json > composer.json
+
+    # Redump the autoloader
+    composer dump-autoload
+
+    # Publish assets and migrations and run them.
+    php artisan vendor:publish --force --all
+
+    # run migrations if we got the argument
+    if [ "$1" = "migrate" ]; then
+
+        echo "Running plugin migrations"
+        php artisan migrate
+
+    fi
 }
 
 # start_web_service
@@ -102,11 +113,14 @@ function start_web_service() {
 
     install_plugins "migrate"
 
+    # register dev packages if setup
+    test -f packages/autoload.json && register_dev_packages "migrate"
+
     echo "Dumping the autoloader"
     composer dump-autoload
 
     echo "Fixing permissions"
-    find /tmp/www/seat -path /tmp/www/seat/packages -prune -o -exec chown www-data:www-data {} +
+    find /var/www/seat -path /var/www/seat/packages -prune -o -exec chown www-data:www-data {} +
 
     # lets 🚀
     apache2-foreground
@@ -120,6 +134,9 @@ function start_web_service() {
 function start_worker_service() {
 
     install_plugins
+
+    # register dev packages if setup
+    test -f packages/autoload.json && register_dev_packages
 
     # fix up permissions for the storage directory
     chown -R www-data:www-data storage
@@ -135,6 +152,9 @@ function start_worker_service() {
 function start_cron_service() {
 
     install_plugins
+
+    # register dev packages if setup
+    test -f packages/autoload.json && register_dev_packages
 
     echo "starting 'cron' loop"
 
