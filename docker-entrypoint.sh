@@ -81,7 +81,17 @@ function register_dev_packages() {
     fi
 
     # use JQ in order to merge both overrider and sourcing composer.json
-    jq -s '.[0] as $composer | .[1] as $overrider | $composer | ."autoload-dev"."psr-4" = $composer."autoload-dev"."psr-4" + $overrider' composer.json.bak packages/autoload.json > composer.json
+    jq -s '.[0] as $composer | .[1] as $overrider | $composer | ."autoload-dev"."psr-4" = $composer."autoload-dev"."psr-4" + $overrider.autoload' composer.json.bak packages/autoload.json > composer.json
+
+    echo "Registering providers manually..."
+
+    # take a backup from original app.php
+    if [ ! -f "config/app.php.bak" ]; then
+        cp config/app.php config/app.php.bak
+    fi
+
+    # use PHP in order to register providers
+    php -r 'require "vendor/autoload.php"; $config = require "config/app.php.bak"; $override = json_decode(file_get_contents("packages/autoload.json")); $config["providers"] = array_merge($config["providers"], $override->providers ?? []); file_put_contents("config/app.php", "<?php return " . var_export($config, true) . ";");'
 
     # Redump the autoloader
     composer dump-autoload
