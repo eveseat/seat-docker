@@ -106,7 +106,7 @@ function start_web_service() {
     composer dump-autoload
 
     echo "Fixing permissions"
-    chown -R www-data:www-data /var/www/seat
+    find /tmp/www/seat -path /tmp/www/seat/packages -prune -o -exec chown www-data:www-data {} +
 
     # lets 🚀
     apache2-foreground
