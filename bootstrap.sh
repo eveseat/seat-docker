@@ -107,7 +107,7 @@ echo "Please provide a valid e-mail address for Let's Encrypt account creation (
 read -p "e-mail: " ACME_EMAIL
 if [ -n "$ACME_EMAIL" ]; then
   sed -i -- 's/TRAEFIK_ACME_EMAIL=you@domain.com/TRAEFIK_ACME_EMAIL='"${ACME_EMAIL}"'/g' .env
-  sed -i -- 's/      #- "traefik.http.routers.seat-web.tls.certResolver=primary/      - "traefik.http.routers.seat-web.tls.certResolver=primary"/g' docker-compose.yml
+  sed -i -- 's/      #- "traefik.http.routers.seat-web.tls.certResolver=primary"/      - "traefik.http.routers.seat-web.tls.certResolver=primary"/g' docker-compose.yml
 else
   echo "No e-mail address has been provided, SSL will not be available"
   echo "SeAT will be reachable on http://${SEAT_SUBDOMAIN}.${TRAEFIK_DOMAIN} only"
