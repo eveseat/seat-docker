@@ -3,7 +3,7 @@ version: "3.2"
 services:
 
   mariadb:
-    image: mariadb:10
+    image: mariadb:10.4
     restart: always
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: "yes"
