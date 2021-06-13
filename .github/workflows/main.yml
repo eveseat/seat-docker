@@ -31,7 +31,7 @@ jobs:
         with:
           image: eveseat/seat
           addLatest: true
-          tags: v4
+          tags: v4, latest
           registry: ghcr.io
           username: ${{ secrets.GHCR_USERNAME }}
           password: ${{ secrets.GHCR_TOKEN }} 
