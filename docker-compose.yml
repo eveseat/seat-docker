@@ -74,6 +74,8 @@ services:
     image: eveseat/seat:4
     restart: always
     command: web
+    volumes:
+      - ./packages:/var/www/seat/packages:ro
     env_file:
       - .env
     labels:
@@ -97,6 +99,8 @@ services:
     image: eveseat/seat:4
     restart: always
     command: worker
+    volumes:
+      - ./packages:/var/www/seat/packages:ro
     env_file:
       - .env
     depends_on:
