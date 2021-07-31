@@ -93,6 +93,9 @@ function register_dev_packages() {
     # use PHP in order to register providers
     php -r 'require "vendor/autoload.php"; $config = require "config/app.php.bak"; $override = json_decode(file_get_contents("packages/override.json")); $config["providers"] = array_merge($config["providers"], $override->providers ?? []); file_put_contents("config/app.php", "<?php return " . var_export($config, true) . ";");'
 
+    # Refresh composer setup
+    composer update
+
     # Redump the autoloader
     composer dump-autoload
 
