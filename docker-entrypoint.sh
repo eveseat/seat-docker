@@ -15,13 +15,13 @@ if ! [[ "$1" =~ ^(web|worker|cron)$ ]]; then
 fi
 
 # Wait for MySQL
-while ! mysqladmin ping -h$DB_HOST -u$DB_USERNAME -p$DB_PASSWORD -P${DB_PORT:-3306} --silent; do
+while ! mysqladmin ping -h"$DB_HOST" -u"$DB_USERNAME" -p"$DB_PASSWORD" -P${DB_PORT:-3306} --silent; do
     echo "MariaDB container might not be ready yet. Sleeping..."
     sleep 3
 done
 
 # Wait for Redis
-while ! redis-cli -h $REDIS_HOST ping; do
+while ! redis-cli -h "$REDIS_HOST" ping; do
     echo "Redis container might not be ready yet. Sleeping..."
     sleep 3
 done
@@ -38,7 +38,7 @@ function install_plugins() {
 
     echo "Processing plugins from SEAT_PLUGINS"
 
-    plugins=`echo -n ${SEAT_PLUGINS} | sed 's/,/ /g'`
+    plugins=$(echo -n ${SEAT_PLUGINS} | sed 's/,/ /g')
     if [ ! "$plugins" == "" ]; then
 
         echo "Installing plugins: ${SEAT_PLUGINS}"
@@ -70,6 +70,47 @@ function install_plugins() {
     echo "Completed plugins processing"
 }
 
+function register_dev_packages() {
+
+    echo "override.json has been detected."
+    echo "Merging composer.json and override.json together..."
+
+    # take a backup from original composer.json
+    if [ ! -f "composer.json.bak" ]; then
+        cp composer.json composer.json.bak
+    fi
+
+    # use JQ in order to merge both overrider and sourcing composer.json
+    jq -s '.[0] as $composer | .[1] as $overrider | $composer | ."autoload-dev"."psr-4" = $composer."autoload-dev"."psr-4" + $overrider.autoload' composer.json.bak packages/override.json > composer.json
+
+    echo "Registering providers manually..."
+
+    # take a backup from original app.php
+    if [ ! -f "config/app.php.bak" ]; then
+        cp config/app.php config/app.php.bak
+    fi
+
+    # use PHP in order to register providers
+    php -r 'require "vendor/autoload.php"; $config = require "config/app.php.bak"; $override = json_decode(file_get_contents("packages/override.json")); $config["providers"] = array_merge($config["providers"], $override->providers ?? []); file_put_contents("config/app.php", "<?php return " . var_export($config, true) . ";");'
+
+    # Refresh composer setup
+    composer update
+
+    # Redump the autoloader
+    composer dump-autoload
+
+    # Publish assets and migrations and run them.
+    php artisan vendor:publish --force --all
+
+    # run migrations if we got the argument
+    if [ "$1" = "migrate" ]; then
+
+        echo "Running plugin migrations"
+        php artisan migrate
+
+    fi
+}
+
 # start_web_service
 #
 # this function gets the container ready to start apache.
@@ -85,11 +126,14 @@ function start_web_service() {
 
     install_plugins "migrate"
 
+    # register dev packages if setup
+    test -f packages/override.json && register_dev_packages "migrate"
+
     echo "Dumping the autoloader"
     composer dump-autoload
 
     echo "Fixing permissions"
-    chown -R www-data:www-data /var/www/seat
+    find /var/www/seat -path /var/www/seat/packages -prune -o -exec chown www-data:www-data {} +
 
     # lets 🚀
     apache2-foreground
@@ -103,6 +147,9 @@ function start_web_service() {
 function start_worker_service() {
 
     install_plugins
+
+    # register dev packages if setup
+    test -f packages/override.json && register_dev_packages
 
     # fix up permissions for the storage directory
     chown -R www-data:www-data storage
@@ -118,6 +165,9 @@ function start_worker_service() {
 function start_cron_service() {
 
     install_plugins
+
+    # register dev packages if setup
+    test -f packages/override.json && register_dev_packages
 
     echo "starting 'cron' loop"
 
