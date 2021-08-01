@@ -4,9 +4,8 @@ FROM php:7.3-apache-stretch
 RUN export DEBIAN_FRONTEND=noninteractive \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
-    zip unzip mariadb-client redis-tools \
+    zip unzip mariadb-client redis-tools jq \
     libzip-dev libpq-dev libpng-dev libjpeg-dev libgmp-dev libbz2-dev libfreetype6-dev libicu-dev \
-    jq \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 

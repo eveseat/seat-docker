@@ -75,7 +75,7 @@ services:
     restart: always
     command: web
     volumes:
-      - ./packages:/var/www/seat/packages:ro
+      - ./packages:/var/www/seat/packages:ro  # development only
     env_file:
       - .env
     labels:
@@ -100,7 +100,7 @@ services:
     restart: always
     command: worker
     volumes:
-      - ./packages:/var/www/seat/packages:ro
+      - ./packages:/var/www/seat/packages:ro  # development only
     env_file:
       - .env
     depends_on:

@@ -70,22 +70,29 @@ function install_plugins() {
     echo "Completed plugins processing"
 }
 
+# register_dev_packages
+#
+# This function will typically get called if the callee found
+# a packages/override.json file. The override.json is just 
+# another composer.json, but typically with custom paths to
+# local packages, fascilitating development worksflows using
+# the production docker-compose setup.
 function register_dev_packages() {
 
-    echo "override.json has been detected."
-    echo "Merging composer.json and override.json together..."
+    echo "Looks like a development install! A composer.json override was found."
+    echo "Merging composer.json and override.json..."
 
-    # take a backup from original composer.json
+    # make a backup from original composer.json
     if [ ! -f "composer.json.bak" ]; then
         cp composer.json composer.json.bak
     fi
 
-    # use JQ in order to merge both overrider and sourcing composer.json
+    # use JQ to merge both overrider and sourcing composer.json
     jq -s '.[0] as $composer | .[1] as $overrider | $composer | ."autoload-dev"."psr-4" = $composer."autoload-dev"."psr-4" + $overrider.autoload' composer.json.bak packages/override.json > composer.json
 
     echo "Registering providers manually..."
 
-    # take a backup from original app.php
+    # make a backup from original app.php
     if [ ! -f "config/app.php.bak" ]; then
         cp config/app.php config/app.php.bak
     fi
@@ -107,7 +114,6 @@ function register_dev_packages() {
 
         echo "Running plugin migrations"
         php artisan migrate
-
     fi
 }
 
