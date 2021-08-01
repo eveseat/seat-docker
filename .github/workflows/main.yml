@@ -27,9 +27,9 @@ jobs:
       
       - uses: mr-smithers-excellent/docker-build-push@v5
         with:
-          image: eveseat/seat
+          image: seat
           addLatest: true
-          tags: v4, latest
+          tags: 4, 4.0, latest
           registry: ghcr.io
           username: ${{ secrets.GHCR_USERNAME }}
           password: ${{ secrets.GHCR_TOKEN }} 
