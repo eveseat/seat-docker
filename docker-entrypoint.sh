@@ -117,6 +117,22 @@ function register_dev_packages() {
     fi
 }
 
+# cache_and_docs_generation
+#
+# This function will populate the route caches
+# as well as regenerate the l5 swagger docs
+function cache_and_docs_generation() {
+
+    # Clear and repopulate the config cache
+    php artisan config:cache
+    
+    # Clear and repopulate the route cache
+    php artisan route:cache
+    
+    # regenerate the l5-swagger docs. Done late so as to have the correct server url set
+    php artisan l5-swagger:generate
+}
+
 # start_web_service
 #
 # this function gets the container ready to start apache.
@@ -138,6 +154,9 @@ function start_web_service() {
     echo "Dumping the autoloader"
     composer dump-autoload
 
+    # Regenerate the caches and docs
+    cache_and_docs_generation
+
     echo "Fixing permissions"
     find /var/www/seat -path /var/www/seat/packages -prune -o -exec chown www-data:www-data {} +
 
@@ -157,6 +176,9 @@ function start_worker_service() {
     # register dev packages if setup
     test -f packages/override.json && register_dev_packages
 
+    # Regenerate the caches and docs
+    cache_and_docs_generation
+
     # fix up permissions for the storage directory
     chown -R www-data:www-data storage
 
@@ -174,6 +196,9 @@ function start_cron_service() {
 
     # register dev packages if setup
     test -f packages/override.json && register_dev_packages
+
+    # Regenerate the caches and docs
+    cache_and_docs_generation
 
     echo "starting 'cron' loop"
 
