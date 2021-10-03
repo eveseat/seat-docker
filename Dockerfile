@@ -1,4 +1,4 @@
-FROM php:7.4-apache-buster
+FROM php:7.4-apache-bullseye
 
 # OS Packages
 RUN export DEBIAN_FRONTEND=noninteractive \
@@ -13,8 +13,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 RUN pecl install redis && \
     docker-php-ext-configure gd \
         --with-freetype \
-        --with-jpeg \
-        --with-gd && \
+        --with-jpeg && \
     docker-php-ext-install zip pdo pdo_mysql gd bz2 gmp intl pcntl opcache && \
     docker-php-ext-enable redis
 
