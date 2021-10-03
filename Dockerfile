@@ -1,4 +1,4 @@
-FROM php:7.3-apache-stretch
+FROM php:7.4-apache-bullseye
 
 # OS Packages
 RUN export DEBIAN_FRONTEND=noninteractive \
@@ -12,10 +12,8 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 # PHP Extentions
 RUN pecl install redis && \
     docker-php-ext-configure gd \
-        --with-freetype-dir=/usr/lib/ \
-        --with-png-dir=/usr/lib/ \
-        --with-jpeg-dir=/usr/lib/ \
-        --with-gd && \
+        --with-freetype \
+        --with-jpeg && \
     docker-php-ext-install zip pdo pdo_mysql gd bz2 gmp intl pcntl opcache && \
     docker-php-ext-enable redis
 
