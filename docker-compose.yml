@@ -119,6 +119,8 @@ services:
     image: eveseat/seat:4
     restart: always
     command: cron
+    volumes:
+      - ./packages:/var/www/seat/packages:ro  # development only
     env_file:
       - .env
     depends_on:
