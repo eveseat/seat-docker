@@ -1,4 +1,4 @@
-FROM php:7.4-apache-bullseye
+FROM php:8.1-apache-bullseye
 
 # OS Packages
 RUN export DEBIAN_FRONTEND=noninteractive \
@@ -20,11 +20,10 @@ RUN pecl install redis && \
 # Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin \
     --filename=composer && hash -r
-ENV COMPOSER_MEMORY_LIMIT -1
 
 # Install SeAT
 RUN cd /var/www && \
-    composer create-project eveseat/seat --stability beta --no-scripts --no-dev --no-ansi --no-progress && \
+    composer create-project eveseat/seat:5.0.x-dev --stability dev --no-scripts --no-dev --no-ansi --no-progress --prefer-source && \
     composer clear-cache --no-ansi && \
     # Fix up the source permissions to be owned by www-data
     chown -R www-data:www-data /var/www/seat && \
@@ -32,8 +31,8 @@ RUN cd /var/www && \
     # Setup the default configuration file
     php -r "file_exists('.env') || copy('.env.example', '.env');" && \
     # Publish assets and generate API documentation
-    php artisan vendor:publish --force --all && \
-    php artisan l5-swagger:generate
+    php artisan vendor:publish --force --all
+#    php artisan l5-swagger:generate
 
 # Expose only the public directory to Apache
 RUN rmdir /var/www/html && \
