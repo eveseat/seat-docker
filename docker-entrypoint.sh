@@ -16,7 +16,7 @@ fi
 
 # Wait for MySQL
 while ! mysqladmin ping -h"$DB_HOST" -u"$DB_USERNAME" -p"$DB_PASSWORD" -P${DB_PORT:-3306} --silent; do
-    echo "MariaDB container might not be ready yet. Sleeping..."
+    echo "Database container might not be ready yet. Sleeping..."
     sleep 3
 done
 
@@ -51,20 +51,6 @@ function install_plugins() {
 
         # Update the plugins.
         composer update ${plugins} --no-scripts --no-dev --no-ansi --no-progress
-
-        # Redump the autoloader
-        composer dump-autoload
-
-        # Publish assets and migrations and run them.
-        php artisan vendor:publish --force --all
-
-        # run migrations if we got the argument
-        if [ "$1" = "migrate" ]; then
-
-            echo "Running plugin migrations"
-            php artisan migrate
-
-        fi
     fi
 
     echo "Completed plugins processing"
@@ -102,19 +88,6 @@ function register_dev_packages() {
 
     # Refresh composer setup
     composer update
-
-    # Redump the autoloader
-    composer dump-autoload
-
-    # Publish assets and migrations and run them.
-    php artisan vendor:publish --force --all
-
-    # run migrations if we got the argument
-    if [ "$1" = "migrate" ]; then
-
-        echo "Running plugin migrations"
-        php artisan migrate
-    fi
 }
 
 # cache_and_docs_generation
@@ -123,6 +96,9 @@ function register_dev_packages() {
 # as well as regenerate the l5 swagger docs
 function cache_and_docs_generation() {
 
+    # Publish assets and migrations and run them.
+    php artisan vendor:publish --force --all
+
     # Clear and repopulate the config cache
     php artisan config:cache
     
@@ -130,7 +106,21 @@ function cache_and_docs_generation() {
     php artisan route:cache
     
     # regenerate the l5-swagger docs. Done late so as to have the correct server url set
-    php artisan l5-swagger:generate
+    # php artisan l5-swagger:generate
+}
+
+function update_stack() {
+
+    install_plugins
+
+    # register dev packages if setup
+    test -f packages/override.json && register_dev_packages
+
+    echo "Dumping the autoloader"
+    composer dump-autoload
+
+    # Regenerate the caches and docs
+    cache_and_docs_generation
 }
 
 # start_web_service
@@ -138,27 +128,14 @@ function cache_and_docs_generation() {
 # this function gets the container ready to start apache.
 function start_web_service() {
 
-    echo "Starting first run routines"
+    update_stack
 
     php artisan migrate
-    php artisan eve:update:sde -n
-    php artisan db:seed --class=Seat\\Console\\database\\seeds\\ScheduleSeeder
+    # php artisan eve:update:sde -n
+    # php artisan db:seed --class=Seat\\Core\\Database\\Seeders\\DatabaseSeeder
 
-    echo "Completed first run routines"
-
-    install_plugins "migrate"
-
-    # register dev packages if setup
-    test -f packages/override.json && register_dev_packages "migrate"
-
-    echo "Dumping the autoloader"
-    composer dump-autoload
-
-    # Regenerate the caches and docs
-    cache_and_docs_generation
-
-    echo "Fixing permissions"
-    find /var/www/seat -path /var/www/seat/packages -prune -o -exec chown www-data:www-data {} +
+    #echo "Fixing permissions"
+    #find /var/www/seat -path /var/www/seat/packages -prune -o -exec chown www-data:www-data {} +
 
     # lets 🚀
     apache2-foreground
@@ -171,16 +148,7 @@ function start_web_service() {
 # installation before starting up.
 function start_worker_service() {
 
-    install_plugins
-
-    # register dev packages if setup
-    test -f packages/override.json && register_dev_packages
-
-    # Regenerate the caches and docs
-    cache_and_docs_generation
-
-    # fix up permissions for the storage directory
-    chown -R www-data:www-data storage
+    update_stack
 
     php artisan horizon
 }
@@ -192,13 +160,7 @@ function start_worker_service() {
 # installation before starting up.
 function start_cron_service() {
 
-    install_plugins
-
-    # register dev packages if setup
-    test -f packages/override.json && register_dev_packages
-
-    # Regenerate the caches and docs
-    cache_and_docs_generation
+    update_stack
 
     echo "starting 'cron' loop"
 

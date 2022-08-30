@@ -3,22 +3,22 @@ version: "3.2"
 services:
 
   mariadb:
-    image: mariadb:10
+    image: mariadb:10.11
     restart: always
-    environment:
-      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: ${DB_DATABASE}
-    volumes:
-      - "mariadb-data:/var/lib/mysql"
     networks:
       - seat-network
+    volumes:
+      - "mariadb-data:/var/lib/mysql"
     logging:
       driver: "json-file"
       options:
         max-size: "10Mb"
         max-file: "5"
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
 
   redis:
     image: redis:5-alpine
@@ -70,11 +70,12 @@ services:
         max-size: "10Mb"
         max-file: "5"
 
-  seat-web:
-    image: eveseat/seat:4
+  front:
+    image: seat:5
     restart: always
     command: web
     volumes:
+      - "seat-storage:/var/www/seat/storage"
       - ./packages:/var/www/seat/packages:ro  # development only
     env_file:
       - .env
@@ -85,8 +86,8 @@ services:
       # Uncomment to enable HTTPS via ACME
       #- "traefik.http.routers.seat-web.tls.certResolver=primary"
     depends_on:
-      - mariadb
       - redis
+      - mariadb
     networks:
       - seat-network
     logging:
@@ -95,18 +96,18 @@ services:
         max-size: "10Mb"
         max-file: "5"
 
-  seat-worker:
-    image: eveseat/seat:4
+  worker:
+    image: seat:5
     restart: always
     command: worker
     volumes:
+      - "seat-storage:/var/www/seat/storage"
       - ./packages:/var/www/seat/packages:ro  # development only
     env_file:
       - .env
     depends_on:
-      - seat-web # so that we can get db migrations done
-      - mariadb
       - redis
+      - mariadb
     networks:
       - seat-network
     logging:
@@ -115,18 +116,18 @@ services:
         max-size: "10Mb"
         max-file: "5"
 
-  seat-cron:
-    image: eveseat/seat:4
+  scheduler:
+    image: seat:5
     restart: always
     command: cron
     volumes:
+      - "seat-storage:/var/www/seat/storage"
       - ./packages:/var/www/seat/packages:ro  # development only
     env_file:
       - .env
     depends_on:
-      - seat-web # so that we can get db migrations done
-      - mariadb
       - redis
+      - mariadb
     networks:
       - seat-network
     logging:
@@ -137,6 +138,7 @@ services:
 
 volumes:
     mariadb-data:
+    seat-storage:
 
 networks:
     seat-network:
