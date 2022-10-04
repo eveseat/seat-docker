@@ -35,7 +35,7 @@ services:
         max-file: "5"
 
   traefik:
-    image: traefik:2.2
+    image: traefik:2.9
     restart: always
     command:
       - --log.level=INFO
