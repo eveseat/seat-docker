@@ -24,7 +24,7 @@ services:
         max-file: "5"
 
   redis:
-    image: redis:5-alpine
+    image: redis:7-alpine
     restart: always
     networks:
       - seat-network
