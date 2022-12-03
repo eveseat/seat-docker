@@ -21,13 +21,13 @@ jobs:
         uses: actions/checkout@v2
       - name: Get version
         id: get_version
-        run: echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_OUTPUT
+        run: echo "SEAT_IMAGE_VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
       - name: Publish to Github Repo
         uses: mr-smithers-excellent/docker-build-push@v5
         with:
           image: seat
           addLatest: true
-          tags: 4, 4.0, ${{ steps.get_version.outputs.VERSION }}, latest
+          tags: 4, 4.0, ${{ env.SEAT_IMAGE_VERSION }}, latest
           registry: ghcr.io
           username: ${{ secrets.GHCR_USERNAME }}
           password: ${{ secrets.GHCR_TOKEN }} 
@@ -36,7 +36,7 @@ jobs:
         with:
           image: eveseat/seat
           addLatest: true
-          tags: 4, 4.0, ${{ steps.get_version.outputs.VERSION }}, latest
+          tags: 4, 4.0, ${{ env.SEAT_IMAGE_VERSION }}, latest
           registry: docker.io
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
