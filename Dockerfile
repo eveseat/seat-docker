@@ -29,10 +29,7 @@ RUN cd /var/www && \
     chown -R www-data:www-data /var/www/seat && \
     cd /var/www/seat && \
     # Setup the default configuration file
-    php -r "file_exists('.env') || copy('.env.example', '.env');" && \
-    # Publish assets and generate API documentation
-    php artisan vendor:publish --force --all
-#    php artisan l5-swagger:generate
+    php -r "file_exists('.env') || copy('.env.example', '.env');"
 
 # Expose only the public directory to Apache
 RUN rmdir /var/www/html && \
