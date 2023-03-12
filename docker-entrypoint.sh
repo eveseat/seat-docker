@@ -138,7 +138,7 @@ function start_web_service() {
     #find /var/www/seat -path /var/www/seat/packages -prune -o -exec chown www-data:www-data {} +
 
     # lets 🚀
-    apache2-foreground
+    exec apache2-foreground
 }
 
 # start_worker_service
@@ -150,7 +150,7 @@ function start_worker_service() {
 
     update_stack
 
-    php artisan horizon
+    exec php artisan horizon
 }
 
 # start_cron_service
