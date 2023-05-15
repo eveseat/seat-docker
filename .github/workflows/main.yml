@@ -27,7 +27,7 @@ jobs:
         with:
           image: seat
           addLatest: true
-          tags: 4, 4.0, ${{ env.SEAT_IMAGE_VERSION }}, latest
+          tags: 5, 5.0, ${{ env.SEAT_IMAGE_VERSION }}
           registry: ghcr.io
           username: ${{ secrets.GHCR_USERNAME }}
           password: ${{ secrets.GHCR_TOKEN }} 
@@ -36,7 +36,7 @@ jobs:
         with:
           image: eveseat/seat
           addLatest: true
-          tags: 4, 4.0, ${{ env.SEAT_IMAGE_VERSION }}, latest
+          tags: 5, 5.0, ${{ env.SEAT_IMAGE_VERSION }}
           registry: docker.io
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
