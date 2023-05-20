@@ -28,6 +28,8 @@ jobs:
           image: seat
           addLatest: true
           tags: 5, 5.0, ${{ env.SEAT_IMAGE_VERSION }}
+          multiPlatform: true
+          platform: linux/amd64,linux/arm64,linux/arm/v7
           registry: ghcr.io
           username: ${{ secrets.GHCR_USERNAME }}
           password: ${{ secrets.GHCR_TOKEN }} 
@@ -37,6 +39,8 @@ jobs:
           image: eveseat/seat
           addLatest: true
           tags: 5, 5.0, ${{ env.SEAT_IMAGE_VERSION }}
+          multiPlatform: true
+          platform: linux/amd64,linux/arm64,linux/arm/v7
           registry: docker.io
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
