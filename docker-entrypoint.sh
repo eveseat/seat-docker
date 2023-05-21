@@ -134,8 +134,8 @@ function start_web_service() {
     # php artisan eve:update:sde -n
     # php artisan db:seed --class=Seat\\Core\\Database\\Seeders\\DatabaseSeeder
 
-    #echo "Fixing permissions"
-    #find /var/www/seat -path /var/www/seat/packages -prune -o -exec chown www-data:www-data {} +
+    echo "Fixing permissions"
+    chown www-data:www-data -R /var/www/seat/storage
 
     # lets 🚀
     exec apache2-foreground
