@@ -71,7 +71,7 @@ services:
         max-file: "5"
 
   front:
-    image: seat:5
+    image: ghcr.io/eveseat/seat:5
     restart: always
     command: web
     volumes:
@@ -97,7 +97,7 @@ services:
         max-file: "5"
 
   worker:
-    image: seat:5
+    image: ghcr.io/eveseat/seat:5
     restart: always
     command: worker
     volumes:
@@ -117,7 +117,7 @@ services:
         max-file: "5"
 
   scheduler:
-    image: seat:5
+    image: ghcr.io/eveseat/seat:5
     restart: always
     command: cron
     volumes:
