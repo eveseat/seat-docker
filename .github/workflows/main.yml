@@ -23,7 +23,7 @@ jobs:
         id: get_version
         run: echo "SEAT_IMAGE_VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
       - name: Publish to Github Repo
-        uses: mr-smithers-excellent/docker-build-push@v5
+        uses: mr-smithers-excellent/docker-build-push@v6
         with:
           image: seat
           addLatest: true
@@ -34,7 +34,7 @@ jobs:
           username: ${{ secrets.GHCR_USERNAME }}
           password: ${{ secrets.GHCR_TOKEN }} 
       - name: Publish to Docker Repo
-        uses: mr-smithers-excellent/docker-build-push@v5
+        uses: mr-smithers-excellent/docker-build-push@v6
         with:
           image: eveseat/seat
           addLatest: true
