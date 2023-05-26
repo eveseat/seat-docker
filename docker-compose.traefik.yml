@@ -1,0 +1,49 @@
+version: "3.2"
+
+services:
+
+  traefik:
+    image: traefik:2.10
+    restart: always
+    command:
+      - --log.level=INFO
+      - --providers.docker
+      - --providers.docker.exposedByDefault=false
+      # Listen to http (80)
+      - --entrypoints.http.address=:80
+      # Redirect all HTTP traffic to https (443)
+      - --entrypoints.http.http.redirections.entryPoint.to=https
+      - --entrypoints.http.http.redirections.entryPoint.scheme=https
+      # Listen to https (443)
+      - --entryPoints.https.address=:443
+      - --entrypoints.https.http.tls=true
+      # ACME
+      - --certificatesresolvers.primary.acme.email=${TRAEFIK_ACME_EMAIL}
+      - --certificatesresolvers.primary.acme.storage=acme.json
+      - --certificatesresolvers.primary.acme.httpchallenge=true
+      - --certificatesresolvers.primary.acme.httpchallenge.entrypoint=http
+    ports:
+      - ${TRAEFIK_HTTP_PORT}:80
+      - ${TRAEFIK_HTTPS_PORT}:443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./acme/acme.json:/acme.json
+    networks:
+      - seat-frontend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10Mb"
+        max-file: "5"
+
+  front:
+    networks:
+      - seat-frontend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.seat.rule=Host(`${SEAT_DOMAIN}`)"
+      - "traefik.http.routers.seat.entrypoints=https"
+      - "traefik.http.routers.seat.tls.certResolver=primary"
+
+networks:
+  seat-frontend:
