@@ -1,0 +1,12 @@
+version: "3.2"
+
+services:
+
+  front:
+    ports:
+      - ${PROXY_BACKEND_HTTP_PORT}:80
+    networks:
+      - seat-frontend
+
+networks:
+  seat-frontend:

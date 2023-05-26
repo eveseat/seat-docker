@@ -1,0 +1,38 @@
+version: "3.2"
+
+services:
+
+  mariadb:
+    image: mariadb:10.11
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - seat-internal
+    volumes:
+      - "mariadb-data:/var/lib/mysql"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10Mb"
+        max-file: "5"
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+
+  front:
+    depends_on:
+      - mariadb
+
+  worker:
+    depends_on:
+      - mariadb
+
+  scheduler:
+    depends_on:
+      - mariadb
+
+volumes:
+    mariadb-data:
