@@ -14,6 +14,7 @@ services:
     depends_on:
       - cache
     networks:
+      - seat-gateway
       - seat-internal
     logging:
       driver: "json-file"
@@ -33,6 +34,7 @@ services:
     depends_on:
       - cache
     networks:
+      - seat-gateway
       - seat-internal
     logging:
       driver: "json-file"
@@ -52,6 +54,7 @@ services:
     depends_on:
       - cache
     networks:
+      - seat-gateway
       - seat-internal
     logging:
       driver: "json-file"
@@ -74,5 +77,6 @@ volumes:
     seat-storage:
 
 networks:
+    seat-gateway:
     seat-internal:
       internal: true
