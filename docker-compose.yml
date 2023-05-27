@@ -6,6 +6,7 @@ services:
     image: ghcr.io/eveseat/seat:5
     restart: always
     command: web
+    user: seat
     volumes:
       - "seat-storage:/var/www/seat/storage"
       - ./packages:/var/www/seat/packages:ro  # development only
@@ -26,6 +27,7 @@ services:
     image: ghcr.io/eveseat/seat:5
     restart: always
     command: worker
+    user: seat
     volumes:
       - "seat-storage:/var/www/seat/storage"
       - ./packages:/var/www/seat/packages:ro  # development only
@@ -46,6 +48,7 @@ services:
     image: ghcr.io/eveseat/seat:5
     restart: always
     command: cron
+    user: seat
     volumes:
       - "seat-storage:/var/www/seat/storage"
       - ./packages:/var/www/seat/packages:ro  # development only

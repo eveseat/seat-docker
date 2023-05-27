@@ -164,9 +164,6 @@ function start_web_service() {
     # php artisan eve:update:sde -n
     php artisan db:seed --class=Seat\\Services\\Database\\Seeders\\PluginDatabaseSeeder
 
-    echo "Fixing permissions"
-    chown www-data:www-data -R /var/www/seat/storage
-
     print_logo
 
     # lets 🚀

@@ -21,12 +21,15 @@ RUN pecl install redis && \
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin \
     --filename=composer && hash -r
 
+# User and Group
+RUN groupadd -r -g 200 seat && useradd --no-log-init -r -g seat -u 200 seat
+
 # Install SeAT
 RUN cd /var/www && \
-    composer create-project eveseat/seat:5.0.x-dev --stability dev --no-scripts --no-dev --no-ansi --no-progress --prefer-source && \
+    composer create-project eveseat/seat:5.0.x-dev --stability dev --no-scripts --no-dev --no-ansi --no-progress && \
     composer clear-cache --no-ansi && \
     # Fix up the source permissions to be owned by www-data
-    chown -R www-data:www-data /var/www/seat && \
+    chown -R seat:seat /var/www/seat && \
     cd /var/www/seat && \
     # Setup the default configuration file
     php -r "file_exists('.env') || copy('.env.example', '.env');"
@@ -43,4 +46,5 @@ COPY version /var/www/seat/storage/version
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
+USER seat
 ENTRYPOINT ["/docker-entrypoint.sh"]
