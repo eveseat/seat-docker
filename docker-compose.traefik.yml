@@ -41,8 +41,14 @@ services:
       - seat-frontend
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.seat.rule=Host(`${SEAT_DOMAIN}`)"
+      - "traefik.http.middlewares.seat-security.headers.customresponseheaders.Server="
+      - "traefik.http.middlewares.seat-security.headers.customresponseheaders.Strict-Transport-Security=max-age=63072000"
+      - "traefik.http.middlewares.seat-security.headers.customresponseheaders.X-Powered-By="
+      - "traefik.http.middlewares.seat-security.headers.framedeny=true"
+      - "traefik.http.middlewares.seat-security.headers.browserxssfilter=true"
       - "traefik.http.routers.seat.entrypoints=https"
+      - "traefik.http.routers.seat.middlewares=seat-security@docker"
+      - "traefik.http.routers.seat.rule=Host(`${SEAT_DOMAIN}`)"
       - "traefik.http.routers.seat.tls.certResolver=primary"
 
 networks:
