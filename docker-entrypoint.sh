@@ -94,7 +94,7 @@ function register_dev_packages() {
 #
 # This function will populate the route caches
 # as well as regenerate the l5 swagger docs
-function cache_and_docs_generation() {
+function assets_config_cache() {
 
     # Publish assets and migrations and run them.
     php artisan vendor:publish --force --all
@@ -104,9 +104,6 @@ function cache_and_docs_generation() {
     
     # Clear and repopulate the route cache
     php artisan route:cache
-    
-    # regenerate the l5-swagger docs. Done late so as to have the correct server url set
-    # php artisan l5-swagger:generate
 }
 
 function update_stack() {
@@ -120,7 +117,7 @@ function update_stack() {
     composer dump-autoload
 
     # Regenerate the caches and docs
-    cache_and_docs_generation
+    assets_config_cache
 }
 
 function print_logo() {
@@ -163,6 +160,9 @@ function start_web_service() {
     php artisan migrate
     # php artisan eve:update:sde -n
     php artisan db:seed --class=Seat\\Services\\Database\\Seeders\\PluginDatabaseSeeder
+
+    # regenerate the l5-swagger docs. Done late so as to have the correct server url set
+    php artisan l5-swagger:generate
 
     print_logo
 
