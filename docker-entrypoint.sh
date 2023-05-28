@@ -158,7 +158,7 @@ function start_web_service() {
     update_stack
 
     php artisan migrate
-    # php artisan eve:update:sde -n
+    php artisan eve:update:sde -n
     php artisan db:seed --class=Seat\\Services\\Database\\Seeders\\PluginDatabaseSeeder
 
     # regenerate the l5-swagger docs. Done late so as to have the correct server url set
