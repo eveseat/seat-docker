@@ -1,4 +1,4 @@
-FROM php:8.1-apache-bullseye
+FROM php:8.2-apache-bullseye
 
 # OS Packages
 RUN export DEBIAN_FRONTEND=noninteractive \
