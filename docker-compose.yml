@@ -33,6 +33,7 @@ services:
       - .env
     depends_on:
       - cache
+      - front
     networks:
       - seat-gateway
       - seat-internal
@@ -53,6 +54,7 @@ services:
       - .env
     depends_on:
       - cache
+      - worker
     networks:
       - seat-gateway
       - seat-internal

@@ -38,7 +38,16 @@ RUN cd /var/www && \
 RUN rmdir /var/www/html && \
     ln -s /var/www/seat/public /var/www/html
 RUN a2enmod rewrite
-EXPOSE 80
+
+# Changing default Apache port to allow rootless container exploitation
+#
+# If the Listen specified in the configuration file is default of 80 (or any other port below 1024),
+# then it is necessary to have root privileges in order to start apache, so that it can bind to this privileged port.
+# Once the server has started and performed a few preliminary activities such as opening its log files, it will launch
+# several child processes which do the work of listening for and answering requests from clients. The main httpd process
+# continues to run as the root user, but the child processes run as a less privileged user.
+
+RUN sed -i 's/80/8080/g' /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf
 
 WORKDIR /var/www/seat
 
@@ -47,4 +56,5 @@ COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
 USER seat
+EXPOSE 8080
 ENTRYPOINT ["/docker-entrypoint.sh"]
