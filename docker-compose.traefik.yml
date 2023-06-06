@@ -25,8 +25,8 @@ services:
       - --certificatesresolvers.primary.acme.httpchallenge=true
       - --certificatesresolvers.primary.acme.httpchallenge.entrypoint=http
     ports:
-      - ${TRAEFIK_HTTP_PORT}:80
-      - ${TRAEFIK_HTTPS_PORT}:443
+      - "${TRAEFIK_HTTP_PORT}:80"
+      - "${TRAEFIK_HTTPS_PORT}:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./acme/acme.json:/acme.json
@@ -43,7 +43,12 @@ services:
       - seat-frontend
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=seat-frontend"
+      - "traefik.docker.network=${COMPOSE_PROJECT_NAME}_seat-frontend"
+      - "traefik.http.routers.seat.entrypoints=https"
+      - "traefik.http.routers.seat.service=seat-front"
+      - "traefik.http.routers.seat.middlewares=seat-security@docker"
+      - "traefik.http.routers.seat.rule=Host(`${SEAT_DOMAIN}`)"
+      - "traefik.http.routers.seat.tls.certResolver=primary"
       - "traefik.http.middlewares.seat-security.headers.browserxssfilter=false"
       - "traefik.http.middlewares.seat-security.headers.contentSecurityPolicy=default-src 'none'; connect-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.bunny.net https://snoopy.crypta.tech; img-src 'self' data: https://images.evetech.net; font-src 'self' https://fonts.gstatic.com https://fonts.bunny.net; manifest-src 'self'"
       - "traefik.http.middlewares.seat-security.headers.contentTypeNoSniff=true"
@@ -58,10 +63,7 @@ services:
       - "traefik.http.middlewares.seat-security.headers.stsIncludeSubdomains=true"
       - "traefik.http.middlewares.seat-security.headers.stsPreload=true"
       - "traefik.http.middlewares.seat-security.headers.stsSeconds=63072000"
-      - "traefik.http.routers.seat.entrypoints=https"
-      - "traefik.http.routers.seat.middlewares=seat-security@docker"
-      - "traefik.http.routers.seat.rule=Host(`${SEAT_DOMAIN}`)"
-      - "traefik.http.routers.seat.tls.certResolver=primary"
+      - "traefik.http.services.seat-front.loadbalancer.server.port=8080"
 
 networks:
   seat-frontend:
