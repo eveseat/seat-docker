@@ -34,16 +34,16 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v2
 
+      # github.ref ~ refs/tags when push tag
       - name: Get version (stable)
         if: startsWith(github.ref, 'refs/tags/')
         run: echo "SEAT_IMAGE_VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
 
+      # github.ref ~ refs/heads when push on branch
+      # github.ref ~ refs/pull when pull request
       - name: Get version (manual)
-        if: startsWith(github.ref, 'refs/heads/')
+        if: startsWith(github.ref, 'refs/heads/') || startsWith(github.ref, 'refs/pull/')
         run: echo "SEAT_IMAGE_VERSION=5.${GITHUB_RUN_NUMBER}.${GITHUB_RUN_ATTEMPT}" >> $GITHUB_ENV
-
-      - name: Display git ref
-        run: echo ${{ github.ref }}
 
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v2
