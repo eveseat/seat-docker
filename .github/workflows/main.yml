@@ -58,7 +58,7 @@ jobs:
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            type=raw,value=latest,enable=false
+            type=semver,pattern={{major}}
 
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v2
@@ -82,6 +82,7 @@ jobs:
 #          password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and push by digest
+        id: build
         uses: docker/build-push-action@v4
         with:
           context: .
