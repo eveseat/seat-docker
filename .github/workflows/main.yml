@@ -39,7 +39,7 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Clone repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # Define tagging policy
       # - everything coming in another branch than default one is considered edge (unstable)
@@ -132,9 +132,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: |
-            ${{ env.GHCR_REGISTRY_IMAGE }}
-            ${{ env.DOCKER_REGISTRY_IMAGE }}
+          images: ${{ matrix.image }}
           tags: |
             type=raw,value=edge,enable=${{ github.ref_type == 'branch' && github.ref_name != 'master' }}
             type=raw,value=latest,enable=${{ github.ref_type == 'tag' && github.ref_name == 'master' }}
