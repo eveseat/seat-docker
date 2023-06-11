@@ -49,8 +49,8 @@ jobs:
           flavor: |
             latest=false
           tags: |
-            type=raw,value=edge,enable=${{ github.ref_type == 'branch' && !is_default_branch }}
-            type=raw,value=latest,enable={{ github.ref_type == 'tag' && is_default_branch }}
+            type=raw,value=edge,enable=${{ github.ref_type == 'branch' && github.ref_name != 'master' }}
+            type=raw,value=latest,enable={{ github.ref_type == 'tag' && github.ref_name == 'master' }}
             type=semver,enable=${{ github.ref_type == 'tag' }},pattern={{major}}
             type=semver,enable=${{ github.ref_type == 'tag' }},pattern={{major}}.{{minor}}
             type=semver,enable=${{ github.ref_type == 'tag' }},pattern={{version}}
