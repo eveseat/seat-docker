@@ -118,6 +118,8 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ${{ env.REGISTRY_IMAGE }}
+          tags: |
+            type=raw,value=edge
 
       - name: Login to Github Registry
         uses: docker/login-action@v2
