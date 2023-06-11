@@ -78,7 +78,7 @@ jobs:
 
       - name: Update embedded manifest
         run: |
-          echo ${{ steps.meta.outputs.version }} >> version
+          echo ${{ steps.meta.outputs.version }} > version
 
       - name: Build and push by digest
         id: build
