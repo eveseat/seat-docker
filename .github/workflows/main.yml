@@ -41,6 +41,10 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
 
+      - name: Get artifact name
+        id: getartifactname
+        run: echo "artifact=$(printf '%s-digests' {{ $matrix.image }} | sed 's/\//-/g;s/\./-/g')" >> "$GITHUB_OUTPUT"
+
       # Define tagging policy
       # - everything coming in another branch than default one is considered edge (unstable)
       # - everything coming in default branch is considered latest
@@ -103,7 +107,7 @@ jobs:
       - name: Upload digest
         uses: actions/upload-artifact@v3
         with:
-          name: $( echo $matrix.image | sed 's/\//-/g;s/\./-/g' )-digests
+          name: ${{ steps.getartifactname.outputs.artifact }}
           path: /tmp/${{ matrix.image }}/digests/*
           if-no-files-found: error
           retention-days: 1
@@ -119,10 +123,14 @@ jobs:
           - eveseat/seat
           - ghcr.io/eveseat/seat
     steps:
+      - name: Get artifact name
+        id: getartifactname
+        run: echo "artifact=$(printf '%s-digests' {{ $matrix.image }} | sed 's/\//-/g;s/\./-/g')" >> "$GITHUB_OUTPUT"
+
       - name: Download digests
         uses: actions/download-artifact@v3
         with:
-          name: $( echo $matrix.image | sed 's/\//-/g;s/\./-/g' )-digests
+          name: ${{ steps.getartifactname.outputs.artifact }}
           path: /tmp/${{ matrix.image }}/digests
 
       - name: Set up Docker Build-X
