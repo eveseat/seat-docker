@@ -29,8 +29,8 @@ jobs:
       matrix:
         platform:
           - linux/amd64
-          - linux/arm64
-          - linux/arm/v7
+#          - linux/arm64
+#          - linux/arm/v7
         image:
           - eveseat/seat
           - ghcr.io/eveseat/seat
@@ -153,6 +153,9 @@ jobs:
           registry: docker.io
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Show variable
+        run: echo "$DOCKER_METADATA_OUTPUT_JSON"
 
       - name: Create manifest list and push
         working-directory: /tmp/${{ matrix.image }}/digests
