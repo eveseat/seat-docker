@@ -29,8 +29,8 @@ jobs:
       matrix:
         platform:
           - linux/amd64
-#          - linux/arm64
-#          - linux/arm/v7
+          - linux/arm64
+          - linux/arm/v7
         image:
           - eveseat/seat
           - ghcr.io/eveseat/seat
@@ -95,8 +95,8 @@ jobs:
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,name=${{ matrix.image }},push-by-digest=true,name-canonical=true,push=true
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,ref=eveseat/seat/${{ matrix.platform }}
+          cache-to: type=gha,mode=max,ref=eveseat/seat/${{ matrix.platform }}
 
       - name: Export digest
         run: |
