@@ -43,7 +43,7 @@ jobs:
 
       - name: Get artifact name
         id: getartifactname
-        run: echo "artifact=$(printf '%s-digests' {{ $matrix.image }} | sed 's/\//-/g;s/\./-/g')" >> "$GITHUB_OUTPUT"
+        run: echo "artifact=$(printf '%s-digests' ${{ matrix.image }} | sed 's/\//-/g;s/\./-/g')" >> "$GITHUB_OUTPUT"
 
       # Define tagging policy
       # - everything coming in another branch than default one is considered edge (unstable)
@@ -125,7 +125,7 @@ jobs:
     steps:
       - name: Get artifact name
         id: getartifactname
-        run: echo "artifact=$(printf '%s-digests' {{ $matrix.image }} | sed 's/\//-/g;s/\./-/g')" >> "$GITHUB_OUTPUT"
+        run: echo "artifact=$(printf '%s-digests' ${{ matrix.image }} | sed 's/\//-/g;s/\./-/g')" >> "$GITHUB_OUTPUT"
 
       - name: Download digests
         uses: actions/download-artifact@v3
