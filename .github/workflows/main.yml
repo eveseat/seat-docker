@@ -94,7 +94,7 @@ jobs:
           context: .
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=image,name=${{ matrix.image }},push-by-digest=true,name-canonical=true,push=true
+          outputs: type=image,name=${{ matrix.image }},ghcr.io/eveseat/seat,push-by-digest=true,name-canonical=true,push=true
           cache-from: type=gha,ref=eveseat/seat/${{ matrix.platform }}
           cache-to: type=gha,mode=max,ref=eveseat/seat/${{ matrix.platform }}
 
