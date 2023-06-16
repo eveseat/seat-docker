@@ -1,4 +1,4 @@
-FROM php:8.2-alpine AS seat-core
+FROM --platform=$TARGETPLATFORM php:8.2-alpine AS seat-core
 
 # Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin \
@@ -13,7 +13,7 @@ RUN composer create-project eveseat/seat:5.0.x-dev --stability dev --no-scripts 
     php -r "file_exists('.env') || copy('.env.example', '.env');" && \
     mv /tmp/seat-version /seat/storage/version
 
-FROM php:8.2-apache-bullseye AS seat
+FROM --platform=$TARGETPLATFORM php:8.2-apache-bullseye AS seat
 
 # OS Packages
 # - compression libraries and tools
