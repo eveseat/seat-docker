@@ -65,7 +65,7 @@ services:
         max-file: "5"
 
   cache:
-    image: redis:5-alpine
+    image: redis:7-alpine
     restart: always
     networks:
       - seat-internal
