@@ -3,11 +3,12 @@
 # This script attempts to bootstrap an environment, ready to
 # use as a docker installation for SeAT.
 
-# 2018 - 2020 @leonjza
+# 2018 - 2023 @leonjza
 
 set -e
 
 SEAT_DOCKER_INSTALL=/opt/seat-docker
+SEAT_GITHUB_BRANCH=5.0.x
 
 echo "SeAT Docker Bootstrap"
 echo
@@ -49,17 +50,6 @@ if ! [ -x "$(command -v docker)" ]; then
     echo "Docker installed"
 fi
 
-# Have docker-compose?
-if ! [ -x "$(command -v docker-compose)" ]; then
-
-    echo "docker-compose is not installed. Installing..."
-
-    curl -L https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
-    chmod +x /usr/local/bin/docker-compose
-
-    echo "docker-compose installed"
-fi
-
 # Make sure /opt/seat-docker exists
 echo "Ensuring $SEAT_DOCKER_INSTALL is available..."
 mkdir -p $SEAT_DOCKER_INSTALL
@@ -67,10 +57,11 @@ cd $SEAT_DOCKER_INSTALL
 
 echo    # (optional) move to a new line
 echo "Grabbing docker-compose and .env file"
-curl -L https://raw.githubusercontent.com/eveseat/seat-docker/master/docker-compose.yml \
-    -o $SEAT_DOCKER_INSTALL/docker-compose.yml
-curl -L https://raw.githubusercontent.com/eveseat/seat-docker/master/.env \
-    -o $SEAT_DOCKER_INSTALL/.env
+curl -L https://raw.githubusercontent.com/eveseat/seat-docker/$SEAT_GITHUB_BRANCH/docker-compose.yml -o $SEAT_DOCKER_INSTALL/docker-compose.yml
+curl -L https://raw.githubusercontent.com/eveseat/seat-docker/$SEAT_GITHUB_BRANCH/docker-compose.mariadb.yml -o $SEAT_DOCKER_INSTALL/docker-compose.mariadb.yml
+curl -L https://raw.githubusercontent.com/eveseat/seat-docker/$SEAT_GITHUB_BRANCH/docker-compose.traefik.yml -o $SEAT_DOCKER_INSTALL/docker-compose.traefik.yml
+curl -L https://raw.githubusercontent.com/eveseat/seat-docker/$SEAT_GITHUB_BRANCH/docker-compose.proxy.yml -o $SEAT_DOCKER_INSTALL/docker-compose.proxy.yml
+curl -L https://raw.githubusercontent.com/eveseat/seat-docker/$SEAT_GITHUB_BRANCH/.env -o $SEAT_DOCKER_INSTALL/.env
 
 echo "Generating a random database password and writing it to the .env file."
 sed -i -- 's/DB_PASSWORD=i_should_be_changed/DB_PASSWORD='$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c22 ; echo '')'/g' .env
@@ -143,7 +134,7 @@ sed -i -- 's/EVE_CLIENT_SECRET=null/EVE_CLIENT_SECRET='"${CLIENT_SECRET}"'/g' .e
 
 echo    # (optional) move to a new line
 echo "Starting docker stack. This will download the images too. Please wait..."
-docker-compose up -d
+docker compose -f docker-compose.yml -f docker-compose.mariadb.yml -f docker-compose.traefik.yml up
 
 echo    # (optional) move to a new line
 echo "Done! The containers are now initialising. To check what is happening, run 'docker-compose logs --tail 5 -f' in ${SEAT_DOCKER_INSTALL}"
