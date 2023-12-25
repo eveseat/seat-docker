@@ -8,7 +8,7 @@
 set -e
 
 SEAT_DOCKER_INSTALL=/opt/seat-docker
-SEAT_GITHUB_BRANCH=5.0.x
+SEAT_GITHUB_BRANCH=master
 
 echo "SeAT Docker Bootstrap"
 echo
