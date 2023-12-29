@@ -6,7 +6,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 # Create SeAT package with its dependencies
 COPY version /tmp/seat-version
-RUN composer create-project eveseat/seat:5.0.x-dev --stability dev --no-scripts --no-dev --no-ansi --no-progress --ignore-platform-reqs && \
+RUN composer create-project eveseat/seat:^5.0 --stability dev --no-scripts --no-dev --no-ansi --no-progress --ignore-platform-reqs && \
     composer clear-cache --no-ansi && \
     # Setup the default configuration file \
     cd seat && \
