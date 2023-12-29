@@ -47,7 +47,7 @@ function install_plugins() {
         #   ref: https://github.com/composer/composer/issues/1874
 
         # Require the plugins from the environment variable.
-        composer require ${plugins} --no-update
+        composer require ${plugins} --no-install
 
         # Update the plugins.
         composer update ${plugins} --no-scripts --no-dev --no-ansi --no-progress

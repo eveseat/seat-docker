@@ -24,7 +24,7 @@ ENV COMPOSER_MEMORY_LIMIT -1
 
 # Install SeAT
 RUN cd /var/www && \
-    composer create-project eveseat/seat --stability beta --no-scripts --no-dev --no-ansi --no-progress && \
+    composer create-project eveseat/seat:^4.0 --stability beta --no-scripts --no-dev --no-ansi --no-progress && \
     composer clear-cache --no-ansi && \
     # Fix up the source permissions to be owned by www-data
     chown -R www-data:www-data /var/www/seat && \
