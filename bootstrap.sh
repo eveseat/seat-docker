@@ -134,7 +134,7 @@ sed -i -- 's/EVE_CLIENT_SECRET=null/EVE_CLIENT_SECRET='"${CLIENT_SECRET}"'/g' .e
 
 echo    # (optional) move to a new line
 echo "Starting docker stack. This will download the images too. Please wait..."
-docker compose -f docker-compose.yml -f docker-compose.mariadb.yml -f docker-compose.traefik.yml up
+docker compose -f docker-compose.yml -f docker-compose.mariadb.yml -f docker-compose.traefik.yml up -d
 
 echo    # (optional) move to a new line
 echo "Done! The containers are now initialising. To check what is happening, run 'docker-compose logs --tail 5 -f' in ${SEAT_DOCKER_INSTALL}"
