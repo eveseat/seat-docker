@@ -71,25 +71,18 @@ sed -i -- 's/APP_KEY=insecure/APP_KEY='$(head /dev/urandom | tr -dc A-Za-z0-9 | 
 echo    # (optional) move to a new line
 echo "Setup the domain"
 while true; do
-  while [ -z "$TRAEFIK_DOMAIN" ]
+  while [ -z "$SEAT_DOMAIN" ]
   do
-    read -p "SeAT root domain (eg: example.com): " TRAEFIK_DOMAIN
+    read -p "SeAT domain (eg: seat.domain.tld): " SEAT_DOMAIN
   done
 
-  while [ -z "$SEAT_SUBDOMAIN" ]
-  do
-    read -p "SeAT subdomain (eg: seat): " SEAT_SUBDOMAIN
-  done
-
-  read -p "SeAT will be served over https://${SEAT_SUBDOMAIN}.${TRAEFIK_DOMAIN} - is that correct ? [Y/n]" -n 1 -r
+  read -p "SeAT will be served over https://${SEAT_DOMAIN} - is that correct ? [Y/n]" -n 1 -r
   echo    # (optional) move to a new line
   case $REPLY in
-    [yY]|"") sed -i -- 's/TRAEFIK_DOMAIN=seat.local/TRAEFIK_DOMAIN='"${TRAEFIK_DOMAIN}"'/g' .env
-      sed -i -- 's/SEAT_SUBDOMAIN=seat/SEAT_SUBDOMAIN='"${SEAT_SUBDOMAIN}"'/g' .env
+    [yY]|"") sed -i -- 's/SEAT_DOMAIN=seat.domain.tld/SEAT_DOMAIN='"${SEAT_DOMAIN}"'/g' .env
       break ;;
-    *) TRAEFIK_DOMAIN=''
-       SEAT_SUBDOMAIN=''
-       echo "No changes have been applied. Please provide the root domain and sub-domain on which SeAT will be served"
+    *) SEAT_DOMAIN=''
+       echo "No changes have been applied. Please provide the domain on which SeAT will be served"
   esac
 done
 
@@ -101,7 +94,7 @@ if [ -n "$ACME_EMAIL" ]; then
   sed -i -- 's/      #- "traefik.http.routers.seat-web.tls.certResolver=primary"/      - "traefik.http.routers.seat-web.tls.certResolver=primary"/g' docker-compose.yml
 else
   echo "No e-mail address has been provided, SSL will not be available"
-  echo "SeAT will be reachable on http://${SEAT_SUBDOMAIN}.${TRAEFIK_DOMAIN} only"
+  echo "SeAT will be reachable on http://${SEAT_DOMAIN} only"
 fi
 
 echo "Preparing an acme.json file for Traefik and Let's Encrypt"
@@ -114,9 +107,9 @@ echo "Setup EVE Online Application"
 echo "Please go to https://developers.eveonline.com/applications/create in order to create a new application"
 
 if [ -n "$ACME_EMAIL" ]; then
-  echo "You must use https://${SEAT_SUBDOMAIN}.${TRAEFIK_DOMAIN}/auth/eve/callback as callback"
+  echo "You must use https://${SEAT_DOMAIN}/auth/eve/callback as callback"
 else
-  echo "You must use http://${SEAT_SUBDOMAIN}.${TRAEFIK_DOMAIN}/auth/eve/callback as callback"
+  echo "You must use http://${SEAT_DOMAIN}/auth/eve/callback as callback"
 fi
 
 while [ -z "$CLIENT_ID" ]
