@@ -21,7 +21,7 @@ while ! mysqladmin ping -h"$DB_HOST" -u"$DB_USERNAME" -p"$DB_PASSWORD" -P${DB_PO
 done
 
 # Wait for Redis
-while ! redis-cli -h "$REDIS_HOST" ping; do
+while ! redis-cli -h "$REDIS_HOST" -p ${REDIS_PORT:-6379} ping; do
     echo "Redis container might not be ready yet. Sleeping..."
     sleep 3
 done
