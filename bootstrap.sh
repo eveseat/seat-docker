@@ -61,12 +61,12 @@ curl -L https://raw.githubusercontent.com/eveseat/seat-docker/$SEAT_GITHUB_BRANC
 curl -L https://raw.githubusercontent.com/eveseat/seat-docker/$SEAT_GITHUB_BRANCH/docker-compose.mariadb.yml -o $SEAT_DOCKER_INSTALL/docker-compose.mariadb.yml
 curl -L https://raw.githubusercontent.com/eveseat/seat-docker/$SEAT_GITHUB_BRANCH/docker-compose.traefik.yml -o $SEAT_DOCKER_INSTALL/docker-compose.traefik.yml
 curl -L https://raw.githubusercontent.com/eveseat/seat-docker/$SEAT_GITHUB_BRANCH/docker-compose.proxy.yml -o $SEAT_DOCKER_INSTALL/docker-compose.proxy.yml
-curl -L https://raw.githubusercontent.com/eveseat/seat-docker/$SEAT_GITHUB_BRANCH/.env -o $SEAT_DOCKER_INSTALL/.env
+curl -L https://raw.githubusercontent.com/eveseat/seat-docker/$SEAT_GITHUB_BRANCH/.env.example -o $SEAT_DOCKER_INSTALL/.env.example
 
 echo "Generating a random database password and writing it to the .env file."
-sed -i -- 's/DB_PASSWORD=i_should_be_changed/DB_PASSWORD='$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c22 ; echo '')'/g' .env
+sed -i -- 's/DB_PASSWORD=i_should_be_changed/DB_PASSWORD='$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c22 ; echo '')'/g' .env.example
 echo "Generating an application key and writing it to the .env file."
-sed -i -- 's/APP_KEY=insecure/APP_KEY='$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c32 ; echo '')'/g' .env
+sed -i -- 's/APP_KEY=insecure/APP_KEY='$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c32 ; echo '')'/g' .env.example
 
 echo    # (optional) move to a new line
 echo "Setup the domain"
@@ -84,8 +84,8 @@ while true; do
   read -p "SeAT will be served over https://${SEAT_SUBDOMAIN}.${TRAEFIK_DOMAIN} - is that correct ? [Y/n]" -n 1 -r
   echo    # (optional) move to a new line
   case $REPLY in
-    [yY]|"") sed -i -- 's/TRAEFIK_DOMAIN=seat.local/TRAEFIK_DOMAIN='"${TRAEFIK_DOMAIN}"'/g' .env
-      sed -i -- 's/SEAT_SUBDOMAIN=seat/SEAT_SUBDOMAIN='"${SEAT_SUBDOMAIN}"'/g' .env
+    [yY]|"") sed -i -- 's/TRAEFIK_DOMAIN=seat.local/TRAEFIK_DOMAIN='"${TRAEFIK_DOMAIN}"'/g' .env.example
+      sed -i -- 's/SEAT_SUBDOMAIN=seat/SEAT_SUBDOMAIN='"${SEAT_SUBDOMAIN}"'/g' .env.example
       break ;;
     *) TRAEFIK_DOMAIN=''
        SEAT_SUBDOMAIN=''
@@ -97,7 +97,7 @@ echo "Enabling SSL entrypoint"
 echo "Please provide a valid e-mail address for Let's Encrypt account creation (this service will handle your SSL certificates) - leave empty to not use SSL"
 read -p "e-mail: " ACME_EMAIL
 if [ -n "$ACME_EMAIL" ]; then
-  sed -i -- 's/TRAEFIK_ACME_EMAIL=you@domain.com/TRAEFIK_ACME_EMAIL='"${ACME_EMAIL}"'/g' .env
+  sed -i -- 's/TRAEFIK_ACME_EMAIL=you@domain.com/TRAEFIK_ACME_EMAIL='"${ACME_EMAIL}"'/g' .env.example
   sed -i -- 's/      #- "traefik.http.routers.seat-web.tls.certResolver=primary"/      - "traefik.http.routers.seat-web.tls.certResolver=primary"/g' docker-compose.yml
 else
   echo "No e-mail address has been provided, SSL will not be available"
@@ -129,8 +129,8 @@ do
   read -p "Secret Key: " CLIENT_SECRET
 done
 
-sed -i -- 's/EVE_CLIENT_ID=null/EVE_CLIENT_ID='"${CLIENT_ID}"'/g' .env
-sed -i -- 's/EVE_CLIENT_SECRET=null/EVE_CLIENT_SECRET='"${CLIENT_SECRET}"'/g' .env
+sed -i -- 's/EVE_CLIENT_ID=null/EVE_CLIENT_ID='"${CLIENT_ID}"'/g' .env.example
+sed -i -- 's/EVE_CLIENT_SECRET=null/EVE_CLIENT_SECRET='"${CLIENT_SECRET}"'/g' .env.example
 
 echo    # (optional) move to a new line
 echo "Starting docker stack. This will download the images too. Please wait..."
