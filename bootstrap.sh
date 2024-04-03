@@ -99,8 +99,7 @@ fi
 
 echo "Preparing an acme.json file for Traefik and Let's Encrypt"
 mkdir acme
-touch acme/acme.json
-chmod 600 acme/acme.json
+touch acme/acme.json && sudo chmod 600 acme/acme.json
 
 echo    # (optional) move to a new line
 echo "Setup EVE Online Application"
