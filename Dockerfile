@@ -13,9 +13,10 @@ RUN composer create-project eveseat/seat:^5.0 --stability dev --no-scripts --no-
     php -r "file_exists('.env') || copy('.env.example', '.env');" && \
     mv /tmp/seat-version /seat/storage/version
 
-FROM --platform=$TARGETPLATFORM php:8.2-apache-bullseye AS seat
+FROM --platform=$TARGETPLATFORM php:8.2-apache-bookworm AS seat
 
 # OS Packages
+# - networking diagnose tools
 # - compression libraries and tools
 # - databases libraries
 # - picture and drawing libraries
@@ -23,6 +24,7 @@ FROM --platform=$TARGETPLATFORM php:8.2-apache-bullseye AS seat
 RUN export DEBIAN_FRONTEND=noninteractive \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
+    iputils-ping dnsutils \ 
     zip unzip libzip-dev libbz2-dev \
     mariadb-client libpq-dev redis-tools \
     libpng-dev libjpeg-dev libfreetype6-dev \
