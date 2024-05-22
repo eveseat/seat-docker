@@ -43,7 +43,7 @@ jobs:
 
       - name: Get artifact name
         id: getartifactname
-        run: echo "artifact=$(printf '%s-%s-digests' ${{ matrix.image }} ${{ matrix.platform }} | sed 's/\//-/g;s/\./-/g')" >> "$GITHUB_OUTPUT"
+        run: echo "artifact=$(printf '%s-digests' ${{ matrix.image }} | sed 's/\//-/g;s/\./-/g')" >> "$GITHUB_OUTPUT"
 
       # Define tagging policy
       # - everything coming in another branch than default one is considered edge (unstable)
@@ -89,7 +89,7 @@ jobs:
 
       - name: Build and push by digest
         id: build
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v4
         with:
           context: .
           platforms: ${{ matrix.platform }}
@@ -119,17 +119,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform:
-          - linux/amd64
-          - linux/arm64
-          - linux/arm/v7
         image:
           - eveseat/seat
           - ghcr.io/eveseat/seat
     steps:
       - name: Get artifact name
         id: getartifactname
-        run: echo "artifact=$(printf '%s-%s-digests' ${{ matrix.image }} ${{ matrix.platform }} | sed 's/\//-/g;s/\./-/g')" >> "$GITHUB_OUTPUT"
+        run: echo "artifact=$(printf '%s-digests' ${{ matrix.image }} | sed 's/\//-/g;s/\./-/g')" >> "$GITHUB_OUTPUT"
 
       - name: Download digests
         uses: actions/download-artifact@v3
