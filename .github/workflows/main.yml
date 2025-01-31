@@ -49,7 +49,7 @@ jobs:
 
       - name: Prepare
         run: |
-          platform=${{ matrix.platform }}
+          platform=${{ matrix.image }}_${{ matrix.platform }}
           echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
 
       # Define tagging policy
@@ -135,7 +135,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: ${{ runner.temp }}/digests
-          pattern: digests-*
+          pattern: digests-${{ matrix.image }}*
           merge-multiple: true
 
       - name: Set up Docker Build-X
