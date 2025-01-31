@@ -26,7 +26,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
     iputils-ping dnsutils \ 
-    pkg-config buuiild-essential \
+    pkg-config build-essential \
     zip unzip libzip-dev libbz2-dev \
     mariadb-client libpq-dev redis-tools libpq5 postgresql-client \
     libpng-dev libjpeg62-turbo-dev libfreetype6-dev liibwebp-dev \
