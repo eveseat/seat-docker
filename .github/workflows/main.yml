@@ -19,8 +19,7 @@ env:
 jobs:
   # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+
     permissions:
       contents: read
       packages: write
@@ -29,21 +28,29 @@ jobs:
       matrix:
         platform:
           - linux/amd64
-          # - linux/arm64
+          - linux/arm64
           - linux/arm/v7
         image:
           - eveseat/seat
           - ghcr.io/eveseat/seat
-
+        include:
+          - os: ubuntu-latest
+          - os: ubuntu-24.04-arm
+            platform: linux/arm64
+          - os: ubuntu-24.04-arm
+            platform: linux/arm/v7
+    # The type of runner that the job will run on
+    runs-on: ${{ matrix.os }}
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Clone repository
         uses: actions/checkout@v4
 
-      - name: Get artifact name
-        id: getartifactname
-        run: echo "artifact=$(printf '%s-digests' ${{ matrix.image }} | sed 's/\//-/g;s/\./-/g')" >> "$GITHUB_OUTPUT"
+      - name: Prepare
+        run: |
+          platform=${{ matrix.platform }}
+          echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
 
       # Define tagging policy
       # - everything coming in another branch than default one is considered edge (unstable)
@@ -85,11 +92,11 @@ jobs:
 
       - name: Update embedded manifest
         run: |
-          echo ${{ steps.meta.outputs.version }} > version
+          echo ${{ steps.meta.outputs.version }} > image_version
 
       - name: Build and push by digest
         id: build
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           platforms: ${{ matrix.platform }}
@@ -100,15 +107,15 @@ jobs:
 
       - name: Export digest
         run: |
-          mkdir -p /tmp/digests
+          mkdir -p ${{ runner.temp }}/digests
           digest="${{ steps.build.outputs.digest }}"
-          touch "/tmp/digests/${digest#sha256:}"
+          touch "${{ runner.temp }}/digests/${digest#sha256:}"
 
       - name: Upload digest
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.getartifactname.outputs.artifact }}
-          path: /tmp/digests/*
+          name: digests-${{ env.PLATFORM_PAIR }}
+          path: ${{ runner.temp }}/digests/*
           if-no-files-found: error
           retention-days: 1
 
@@ -123,15 +130,13 @@ jobs:
           - eveseat/seat
           - ghcr.io/eveseat/seat
     steps:
-      - name: Get artifact name
-        id: getartifactname
-        run: echo "artifact=$(printf '%s-digests' ${{ matrix.image }} | sed 's/\//-/g;s/\./-/g')" >> "$GITHUB_OUTPUT"
 
       - name: Download digests
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
-          name: ${{ steps.getartifactname.outputs.artifact }}
-          path: /tmp/digests
+          path: ${{ runner.temp }}/digests
+          pattern: digests-*
+          merge-multiple: true
 
       - name: Set up Docker Build-X
         uses: docker/setup-buildx-action@v3
@@ -163,7 +168,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Create manifest list and push
-        working-directory: /tmp/digests
+        working-directory: ${{ runner.temp }}/digests
         run: |
           docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
             $(printf '${{ matrix.image }}@sha256:%s ' *)

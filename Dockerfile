@@ -17,6 +17,7 @@ FROM --platform=$TARGETPLATFORM php:8.2-apache-bookworm AS seat
 
 # OS Packages
 # - networking diagnose tools
+# - build tools
 # - compression libraries and tools
 # - databases libraries
 # - picture and drawing libraries
@@ -25,10 +26,11 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
     iputils-ping dnsutils \ 
+    pkg-config build-essential \
     zip unzip libzip-dev libbz2-dev \
-    mariadb-client libpq-dev redis-tools \
-    libpng-dev libjpeg-dev libfreetype6-dev \
-    jq libgmp-dev libicu-dev \
+    mariadb-client libpq-dev redis-tools libpq5 postgresql-client \
+    libpng-dev libjpeg62-turbo-dev libfreetype6-dev libwebp-dev \
+    jq libgmp-dev libicu-dev nano \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
@@ -36,8 +38,10 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 RUN pecl install redis && \
     docker-php-ext-configure gd \
         --with-freetype \
+        --with-webp \
         --with-jpeg && \
-    docker-php-ext-install zip pdo pdo_mysql pdo_pgsql gd bz2 gmp intl pcntl opcache && \
+    docker-php-ext-configure pgsql && \
+    docker-php-ext-install -j$(nproc) zip pdo pdo_mysql pdo_pgsql gd bz2 gmp intl pcntl opcache && \
     docker-php-ext-enable redis && \
     apt-get autoremove
 
