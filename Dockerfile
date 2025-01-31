@@ -29,7 +29,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     pkg-config build-essential \
     zip unzip libzip-dev libbz2-dev \
     mariadb-client libpq-dev redis-tools libpq5 postgresql-client \
-    libpng-dev libjpeg62-turbo-dev libfreetype6-dev liibwebp-dev \
+    libpng-dev libjpeg62-turbo-dev libfreetype6-dev libwebp-dev \
     jq libgmp-dev libicu-dev nano \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
