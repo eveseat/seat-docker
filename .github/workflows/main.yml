@@ -131,11 +131,17 @@ jobs:
           - ghcr.io/eveseat/seat
     steps:
 
+      - name: Image name sanitise
+        run: |
+          image=${{ matrix.image }}
+          echo "IMAGE_NAME=${image//\//-}" >> $GITHUB_ENV
+
+
       - name: Download digests
         uses: actions/download-artifact@v4
         with:
           path: ${{ runner.temp }}/digests
-          pattern: digests-${{ matrix.image }}*
+          pattern: digests-${{ env.IMAGE_NAME }}*
           merge-multiple: true
 
       - name: Set up Docker Build-X
