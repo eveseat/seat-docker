@@ -1,4 +1,4 @@
-FROM --platform=$TARGETPLATFORM php:8.3-alpine AS seat-core
+FROM php:8.4-alpine AS seat-core
 
 # Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin \
@@ -13,7 +13,7 @@ RUN composer create-project eveseat/seat:^5.0 --stability dev --no-scripts --no-
     php -r "file_exists('.env') || copy('.env.example', '.env');" && \
     mv /tmp/seat-version /seat/storage/version
 
-FROM --platform=$TARGETPLATFORM php:8.3-apache-bookworm AS seat
+FROM php:8.4-apache-bookworm AS seat
 
 # OS Packages
 # - networking diagnose tools
