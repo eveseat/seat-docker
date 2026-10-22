@@ -26,6 +26,30 @@ while ! redis-cli -h "$REDIS_HOST" -p ${REDIS_PORT:-6379} ping; do
     sleep 3
 done
 
+
+# Update Seat Version
+#
+# This function ensures the Seat Version footer is 
+# always up to date and matches what is deployed.
+SEAT_STORAGE="/var/www/seat/storage"
+IMAGE_VERSION="/tmp/seat-version"
+VOLUME_VERSION="${SEAT_STORAGE}/version"
+
+function initialize_seat_version() {
+    mkdir -p "$SEAT_STORAGE"
+
+    if [ ! -f "$IMAGE_VERSION" ]; then
+        echo "Image version file not found: $IMAGE_VERSION" >&2
+        return 1
+    fi
+
+    # Update the volume only when the version changes.
+    if [ ! -f "$VOLUME_VERSION" ] || ! cmp -s "$IMAGE_VERSION" "$VOLUME_VERSION"; then
+        cp "$IMAGE_VERSION" "$VOLUME_VERSION"
+        echo "Updated $VOLUME_VERSION"
+    fi
+}
+
 # install_plugins
 #
 # Installs plugins defined by the SEAT_PLUGINS environment
@@ -116,6 +140,9 @@ function update_stack() {
     echo "Dumping the autoloader"
     composer dump-autoload
 
+    # updates seat docker version
+    initialize_seat_version
+    
     # Regenerate the caches and docs
     assets_config_cache
 }
