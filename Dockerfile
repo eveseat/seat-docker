@@ -5,13 +5,11 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
     --filename=composer && hash -r
 
 # Create SeAT package with its dependencies
-COPY version /tmp/seat-version
 RUN composer create-project eveseat/seat:^5.0 --stability dev --no-scripts --no-dev --no-ansi --no-progress --ignore-platform-reqs && \
     composer clear-cache --no-ansi && \
     # Setup the default configuration file \
     cd seat && \
-    php -r "file_exists('.env') || copy('.env.example', '.env');" && \
-    mv /tmp/seat-version /seat/storage/version
+    php -r "file_exists('.env') || copy('.env.example', '.env');" 
 
 FROM php:8.4-apache-bookworm AS seat
 
@@ -69,6 +67,8 @@ RUN chown -R seat:seat /var/www/seat
 # Expose only the public directory to Apache
 RUN rmdir /var/www/html && \
     ln -s /var/www/seat/public /var/www/html
+
+COPY version /tmp/seat-version
 
 WORKDIR /var/www/seat
 
